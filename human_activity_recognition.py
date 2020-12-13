@@ -5,10 +5,10 @@ import pickle
 import os
 import urllib.request
 import sys
-import zipfile
 
 import numpy as np
 import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
 
 
 class Dataset:
@@ -27,6 +27,7 @@ class Dataset:
             self.target = np.array([Dataset.CLASSES.index(target) for target in self.data["class"]], np.int32)
             self.data = self.data.drop("class", axis=1)
 
+
 parser = argparse.ArgumentParser()
 # These arguments will be set appropriately by ReCodEx, even if you change them.
 parser.add_argument("--predict", default=None, type=str, help="Run prediction on given data")
@@ -35,14 +36,20 @@ parser.add_argument("--seed", default=42, type=int, help="Random seed")
 # For these and any other arguments you add, ReCodEx will keep your default value.
 parser.add_argument("--model_path", default="human_activity_recognition.model", type=str, help="Model path")
 
+
 def main(args):
     if args.predict is None:
         # We are training a model.
         np.random.seed(args.seed)
         train = Dataset()
+        data, target = train.data.to_numpy(), np.array(train.target)
 
-        # TODO: Train a model on the given dataset and store it in `model`.
-        model = None
+        # Train a model on the given dataset and store it in `model`.
+        model = RandomForestClassifier(n_estimators=100,
+                                       criterion='gini',
+                                       max_depth=None,
+                                       )
+        model.fit(X=data, y=target)
 
         # Serialize the model.
         with lzma.open(args.model_path, "wb") as model_file:
@@ -51,13 +58,14 @@ def main(args):
     else:
         # Use the model and return test set predictions.
         test = Dataset(args.predict)
+        data = test.data
 
         with lzma.open(args.model_path, "rb") as model_file:
             model = pickle.load(model_file)
 
-        # TODO: Generate `predictions` with the test set predictions, either
+        # Generate `predictions` with the test set predictions, either
         # as a Python list of a NumPy array.
-        predictions = None
+        predictions = model.predict(data)
 
         return predictions
 
