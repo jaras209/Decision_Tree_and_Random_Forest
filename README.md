@@ -4,6 +4,9 @@ Implementation of the classification decision tree and random forest supporting 
 
 Random forest is a collection of decision trees trained with dataset bagging and random feature subsampling.
 
+Task from [Machine Learning for Greenhorns – Winter 2020/21](https://ufal.mff.cuni.cz/courses/npfl129/2021-winter). Part of this code was provided by 
+[Milan Straka](https://ufal.mff.cuni.cz/milan-straka).
+
 ## decision_tree
 The decision tree algorithm is implemented in `decision_tree.py`. 
 
